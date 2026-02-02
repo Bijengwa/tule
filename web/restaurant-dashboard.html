@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restaurant Dashboard</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #111827;
+      padding-top: 20px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .tool {
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tool:hover {
+      background: #1f2937;
+    }
+
+    .active {
+      background: #22c55e;
+    }
+
+    /* Workspace */
+    .workspace {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: none;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    input {
+      padding: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: none;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th {
+      background: #1f2937;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .status-pending {
+      color: #fbbf24;
+    }
+
+    .status-processing {
+      color: #3b82f6;
+    }
+
+    .status-ready {
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Restaurant</h2>
+
+    <div class="tool active" onclick="setTool('menu')" id="menuTool">
+      <i class="fa-solid fa-utensils"></i>
+      Menu
+    </div>
+
+    <div class="tool" onclick="setTool('add')" id="addTool">
+      <i class="fa-solid fa-plus"></i>
+      Add Meal
+    </div>
+
+    <div class="tool" onclick="setTool('orders')" id="ordersTool">
+      <i class="fa-solid fa-receipt"></i>
+      Orders
+    </div>
+  </div>
+
+  <!-- Workspace -->
+  <div class="workspace" id="workspace">
+  </div>
+
+<script>
+const workspace = document.getElementById("workspace");
+const token = localStorage.getItem("token");
+
+function setTool(tool) {
+  document.querySelectorAll(".tool").forEach(t => t.classList.remove("active"));
+  document.getElementById(tool + "Tool").classList.add("active");
+
+  if (tool === "menu") showMenu();
+  if (tool === "add") showAddMeal();
+  if (tool === "orders") showOrders();
+}
+
+function showMenu() {
+  workspace.innerHTML = `
+    <h2>Your Menu</h2>
+    <div id="mealsContainer"></div>
+  `;
+  loadMeals();
+}
+
+function showAddMeal() {
+  workspace.innerHTML = `
+    <h2>Add New Meal</h2>
+    <input type="text" id="mealName" placeholder="Meal Name"/>
+    <input type="number" id="mealPrice" placeholder="Price"/>
+    <button onclick="addMeal()">Add Meal</button>
+  `;
+}
+
+function showOrders() {
+  workspace.innerHTML = `
+    <h2>Customer Orders</h2>
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Client</th>
+          <th>Meal</th>
+          <th>Price</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody"></tbody>
+    </table>
+  `;
+  loadOrders();
+}
+
+// === Backend Functions ===
+
+async function loadMeals() {
+  const res = await fetch("http://localhost:3001/api/meals", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const meals = await res.json();
+  const container = document.getElementById("mealsContainer");
+  container.innerHTML = "";
+
+  meals.forEach(meal => {
+    container.innerHTML += `
+      <div class="card">
+        <h3>${meal.name}</h3>
+        <p>Price: $${meal.price}</p>
+      </div>
+    `;
+  });
+}
+
+async function addMeal() {
+  const name = document.getElementById("mealName").value;
+  const price = document.getElementById("mealPrice").value;
+
+  if (!name || !price) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  await fetch("http://localhost:3001/api/meals", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ name, price })
+  });
+
+  alert("Meal added successfully!");
+  setTool("menu");
+}
+
+async function loadOrders() {
+  try {
+    const res = await fetch("http://localhost:3001/api/orders", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error("Failed to load orders");
+
+    const data = await res.json();
+    const orders = data.orders || [];
+    const body = document.getElementById("ordersBody");
+    body.innerHTML = "";
+
+    if (orders.length === 0) {
+      body.innerHTML = `
+        <tr>
+          <td colspan="7" style="padding:20px; text-align:center;">
+            No orders yet
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    orders.forEach((order, index) => {
+      const statusClass = `status-${order.status}`;
+      body.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${order.customer.name}</td>
+          <td>${order.meal.name}</td>
+          <td>$${order.total_price}</td>
+          <td>${order.customer.phone}</td>
+          <td class="${statusClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</td>
+          <td>
+            ${renderActionButton(order)}
+          </td>
+        </tr>
+      `;
+    });
+  } catch (error) {
+    console.error("Error loading orders:", error);
+    workspace.innerHTML += `<p style="color:#ef4444;">Error loading orders: ${error.message}</p>`;
+  }
+}
+
+function renderActionButton(order) {
+  if (order.status === "pending") {
+    return `<button onclick="updateStatus(${order.id}, 'processing')">
+              Mark as Seen
+            </button>`;
+  }
+
+  if (order.status === "processing") {
+    return `<button onclick="updateStatus(${order.id}, 'ready')">
+              Mark Ready
+            </button>`;
+  }
+
+  if (order.status === "ready") {
+    return `<span style="color:#22c55e;">Ready ✔</span>`;
+  }
+
+  return order.status;
+}
+
+async function updateStatus(orderId, status) {
+  try {
+    await fetch(`http://localhost:3001/api/orders/${orderId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    loadOrders();
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    alert("Failed to update order status");
+  }
+}
+
+// Initialize with menu view
+showMenu();
+</script>
+
+</body>
+</html>

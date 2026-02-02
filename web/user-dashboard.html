@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #111827;
+      padding-top: 20px;
+    }
+
+    .tool {
+      padding: 15px 20px;
+      cursor: pointer;
+    }
+
+    .tool:hover {
+      background: #1f2937;
+    }
+
+    .active {
+      background: #22c55e;
+    }
+
+    .workspace {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #22c55e;
+      border: none;
+      padding: 6px 10px;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #1f2937;
+      text-align: left;
+    }
+
+    .status-pending { color: #fbbf24; }
+    .status-processing { color: #3b82f6; }
+    .status-ready { color: #22c55e; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="tool active" onclick="setTool('meals')" id="mealsTool">
+    <i class="fa-solid fa-utensils"></i> Meals
+  </div>
+  <div class="tool" onclick="setTool('orders')" id="ordersTool">
+    <i class="fa-solid fa-receipt"></i> My Orders
+  </div>
+</div>
+
+<div class="workspace" id="workspace"></div>
+
+<script>
+const workspace = document.getElementById("workspace");
+const token = localStorage.getItem("token");
+
+function setTool(tool) {
+  document.querySelectorAll(".tool").forEach(t => t.classList.remove("active"));
+  document.getElementById(tool + "Tool").classList.add("active");
+
+  if (tool === "meals") showMeals();
+  if (tool === "orders") showOrders();
+}
+
+function showMeals() {
+  workspace.innerHTML = `<h2>Available Meals</h2><div id="mealsContainer"></div>`;
+  loadMeals();
+}
+
+function showOrders() {
+  workspace.innerHTML = `
+    <h2>My Orders</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Meal</th>
+          <th>Restaurant</th>
+          <th>Phone</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody"></tbody>
+    </table>
+  `;
+  loadUserOrders();
+}
+
+async function loadMeals() {
+  const res = await fetch("http://localhost:3001/api/meals/public");
+  const meals = await res.json();
+
+  const container = document.getElementById("mealsContainer");
+  container.innerHTML = "";
+
+  meals.forEach(meal => {
+    container.innerHTML += `
+      <div class="card">
+        <h3>${meal.name}</h3>
+        <p>Restaurant: ${meal.restaurant_name}</p>
+        <p>Price: $${meal.price}</p>
+        <button onclick="orderMeal(${meal.id})">
+          Order
+        </button>
+      </div>
+    `;
+  });
+}
+
+async function loadUserOrders() {
+  const res = await fetch("http://localhost:3001/api/orders/user", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+  const orders = data.orders || [];
+
+  const body = document.getElementById("ordersBody");
+  body.innerHTML = "";
+
+  if (orders.length === 0) {
+    body.innerHTML = `<tr><td colspan="5">No orders yet</td></tr>`;
+    return;
+  }
+
+  orders.forEach((order, index) => {
+    body.innerHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${order.meal.name}</td>
+        <td>${order.restaurant.name}</td>
+        <td>${order.restaurant.phone}</td>
+        <td class="status-${order.status}">
+          ${order.status}
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function orderMeal(mealId) {
+  await fetch("http://localhost:3001/api/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ meal_id: mealId })
+  });
+
+  alert("Order placed!");
+}
+
+showMeals();
+</script>
+
+</body>
+</html>
