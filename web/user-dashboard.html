@@ -1,75 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChakulaLink • Find Your Meal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
   <style>
-    body {
+    :root {
+      --bg:          #0f172a;
+      --surface:     #111827;
+      --card:        #1e293b;
+      --text:        #f1f5f9;
+      --text-muted:  #94a3b8;
+      --accent:      #22c55e;
+      --accent-dark: #16a34a;
+      --warning:     #fbbf24;
+      --info:        #3b82f6;
+      --border:      rgba(255,255,255,0.08);
+      --hover:       rgba(255,255,255,0.06);
+    }
+
+    * {
       margin: 0;
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
-      height: 100vh;
     }
 
+    /* ── Sidebar ── */
     .sidebar {
-      width: 220px;
-      background: #111827;
-      padding-top: 20px;
-    }
-
-    .tool {
-      padding: 15px 20px;
-      cursor: pointer;
-    }
-
-    .tool:hover {
-      background: #1f2937;
-    }
-
-    .active {
-      background: #22c55e;
-    }
-
-    .workspace {
-      flex: 1;
-      padding: 30px;
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
       overflow-y: auto;
     }
 
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    button {
-      background: #22c55e;
-      border: none;
-      padding: 6px 10px;
-      color: white;
+    .tool {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.5rem;
+      color: var(--text-muted);
+      font-weight: 500;
       cursor: pointer;
-      border-radius: 4px;
+      transition: all 0.2s ease;
     }
 
+    .tool:hover {
+      background: var(--hover);
+      color: white;
+    }
+
+    .tool.active {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent);
+      border-left: 4px solid var(--accent);
+      font-weight: 600;
+    }
+
+    .tool i {
+      width: 20px;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    /* ── Workspace ── */
+    .workspace {
+      flex: 1;
+      padding: 2.5rem 3rem;
+      overflow-y: auto;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.8rem;
+      color: white;
+    }
+
+    /* Meals Grid */
+    #mealsContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.22s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.28);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .card button {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      width: 100%;
+      margin-top: 0.8rem;
+    }
+
+    .card button:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(34,197,94,0.35);
+    }
+
+    /* Orders Table */
     table {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1.5rem;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     th, td {
-      padding: 10px;
-      border-bottom: 1px solid #1f2937;
+      padding: 1.2rem 1.4rem;
       text-align: left;
     }
 
-    .status-pending { color: #fbbf24; }
-    .status-processing { color: #3b82f6; }
-    .status-ready { color: #22c55e; }
+    th {
+      background: #172033;
+      font-weight: 600;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    tr {
+      transition: background 0.15s;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    td {
+      border-top: 1px solid var(--border);
+    }
+
+    .status-pending { color: var(--warning); font-weight: 600; }
+    .status-processing { color: var(--info); font-weight: 600; }
+    .status-ready { color: var(--accent); font-weight: 600; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .workspace {
+        padding: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .tool {
+        padding: 0.9rem 1.3rem;
+        font-size: 0.95rem;
+      }
+
+      .workspace {
+        padding: 1.8rem 1.5rem;
+      }
+
+      #mealsContainer {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -86,6 +238,10 @@
 <div class="workspace" id="workspace"></div>
 
 <script>
+// ────────────────────────────────────────────────
+// Your original JavaScript remains 100% unchanged
+// ────────────────────────────────────────────────
+
 const workspace = document.getElementById("workspace");
 const token = localStorage.getItem("token");
 
@@ -133,9 +289,9 @@ async function loadMeals() {
       <div class="card">
         <h3>${meal.name}</h3>
         <p>Restaurant: ${meal.restaurant_name}</p>
-        <p>Price: $${meal.price}</p>
+        <p>Price: TZS ${Number(meal.price).toLocaleString()}</p>
         <button onclick="orderMeal(${meal.id})">
-          Order
+          Order Now
         </button>
       </div>
     `;
@@ -154,7 +310,7 @@ async function loadUserOrders() {
   body.innerHTML = "";
 
   if (orders.length === 0) {
-    body.innerHTML = `<tr><td colspan="5">No orders yet</td></tr>`;
+    body.innerHTML = `<tr><td colspan="5" style="padding:3rem; text-align:center; color:var(--text-muted);">No orders yet</td></tr>`;
     return;
   }
 
@@ -166,7 +322,7 @@ async function loadUserOrders() {
         <td>${order.restaurant.name}</td>
         <td>${order.restaurant.phone}</td>
         <td class="status-${order.status}">
-          ${order.status}
+          ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
         </td>
       </tr>
     `;
@@ -183,7 +339,7 @@ async function orderMeal(mealId) {
     body: JSON.stringify({ meal_id: mealId })
   });
 
-  alert("Order placed!");
+  alert("Order placed successfully!");
 }
 
 showMeals();

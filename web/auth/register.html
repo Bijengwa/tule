@@ -3,111 +3,244 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register</title>
+  <title>ChakulaLink • Create Account</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --bg:        #0f172a;
+      --surface:   #111827;
+      --card:      #1e293b;
+      --text:      #f1f5f9;
+      --text-muted:#94a3b8;
+      --accent:    #22c55e;
+      --accent-dark:#16a34a;
+      --border:    rgba(255,255,255,0.08);
+      --input-bg:  #1e293b;
+      --input-border: rgba(255,255,255,0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      color: white;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .register-container {
+      width: 100%;
+      max-width: 420px;
     }
 
     .card {
-      background: #1e293b;
-      padding: 30px;
-      width: 350px;
-      border-radius: 8px;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
     }
 
-    h2 {
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.8px;
     }
 
-    select, input, button {
+    .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 2.2rem;
+      font-size: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    select,
+    input {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: none;
-    }
-
-    button {
-      background: #22c55e;
+      padding: 0.95rem 1.1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
       color: white;
-      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s ease;
     }
 
-    a {
-      color: #22c55e;
-      text-decoration: none;
-      font-size: 14px;
+    select:focus,
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    select option {
+      background: #111827;
+      color: white;
+    }
+
+    .register-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.2rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .register-btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(34,197,94,0.3);
     }
 
     .links {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 1.8rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 2rem 1.5rem;
+      }
+
+      .logo {
+        font-size: 1.9rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Create Account</h2>
+  <div class="register-container">
+    <div class="card">
+      <div class="logo">ChakulaLink</div>
+      <div class="subtitle">Join the tastiest network in town</div>
 
-    <select id="role">
-      <option value="user">User</option>
-      <option value="restaurant">Restaurant</option>
-    </select>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="role">I want to join as</label>
+          <select id="role">
+            <option value="user">User (looking for food)</option>
+            <option value="restaurant">Restaurant / Chef</option>
+          </select>
+        </div>
 
-    <input type="text" id="name" placeholder="Name" />
-    <input type="text" id="phone" placeholder="Phone Number" />
-    <input type="password" id="password" placeholder="Password" />
-    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+        <div class="form-group">
+          <label for="name">Full Name / Business Name</label>
+          <input type="text" id="name" placeholder="e.g. Amina Mkude / Mama Ntilie" required />
+        </div>
 
-    <button onclick="register()">Register</button>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="e.g. 0655 123 456" required />
+        </div>
 
-    <div class="links">
-      <a href="login.html">Already have an account? Login</a>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="••••••••" required />
+        </div>
+
+        <button type="button" class="register-btn" onclick="register()">Create Account</button>
+      </form>
+
+      <div class="links">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
     </div>
   </div>
 
 <script>
 async function register() {
-  const role = document.getElementById("role").value;
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const password = document.getElementById("password").value;
+  const role           = document.getElementById("role").value;
+  const name           = document.getElementById("name").value.trim();
+  const phone          = document.getElementById("phone").value.trim();
+  const password       = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (!name || !phone || !password) {
+    alert("Please fill in all fields");
+    return;
+  }
 
   if (password !== confirmPassword) {
     alert("Passwords do not match");
     return;
   }
 
-  const res = await fetch("http://localhost:3001/api/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ role, name, phone, password })
-  });
+  try {
+    const res = await fetch("http://localhost:3001/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, name, phone, password })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (res.ok) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
+    if (res.ok) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
 
-    if (data.role === "user") {
-      window.location.href = "../user-dashboard.html";
+      if (data.role === "user") {
+        window.location.href = "../user-dashboard.html";
+      } else {
+        window.location.href = "../restaurant-dashboard.html";
+      }
     } else {
-      window.location.href = "../restaurant-dashboard.html";
+      alert(data.message || "Registration failed. Please try again.");
     }
-  } else {
-    alert(data.message);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Please check your connection.");
   }
 }
 </script>

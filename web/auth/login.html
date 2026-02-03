@@ -3,74 +3,190 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
+  <title>ChakulaLink • Sign In</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --bg:          #0f172a;
+      --surface:     #111827;
+      --card:        #1e293b;
+      --text:        #f1f5f9;
+      --text-muted:  #94a3b8;
+      --accent:      #22c55e;
+      --accent-dark: #16a34a;
+      --border:      rgba(255,255,255,0.08);
+      --input-bg:    #1e293b;
+      --input-border:rgba(255,255,255,0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      color: white;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
     }
 
     .card {
-      background: #1e293b;
-      padding: 30px;
-      width: 350px;
-      border-radius: 8px;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
     }
 
-    h2 {
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
       text-align: center;
-      margin-bottom: 20px;
-    }
-
-    select, input, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      border: none;
-    }
-
-    button {
-      background: #22c55e;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.8px;
       color: white;
-      cursor: pointer;
     }
 
-    a {
-      color: #22c55e;
-      text-decoration: none;
-      font-size: 14px;
+    .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 2.2rem;
+      font-size: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 0.95rem 1.1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    select:focus,
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    select option {
+      background: #111827;
+      color: white;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.2rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .login-btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(34,197,94,0.3);
     }
 
     .links {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 1.8rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 2rem 1.5rem;
+      }
+
+      .logo {
+        font-size: 1.9rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Login</h2>
+  <div class="login-container">
+    <div class="card">
+      <div class="logo">ChakulaLink</div>
+      <div class="subtitle">Sign in to continue</div>
 
-    <select id="role">
-      <option value="user">User</option>
-      <option value="restaurant">Restaurant</option>
-    </select>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="role">Login as</label>
+          <select id="role">
+            <option value="user">User</option>
+            <option value="restaurant">Restaurant</option>
+          </select>
+        </div>
 
-    <input type="text" id="phone" placeholder="Phone Number" />
-    <input type="password" id="password" placeholder="Password" />
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="e.g. 0655 123 456" required autofocus />
+        </div>
 
-    <button onclick="login()">Login</button>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
 
-    <div class="links">
-      <a href="register.html">Don't have an account? Register</a>
+        <button type="button" class="login-btn" onclick="login()">Sign In</button>
+      </form>
+
+      <div class="links">
+        Don't have an account? <a href="register.html">Register now</a>
+      </div>
     </div>
   </div>
 
